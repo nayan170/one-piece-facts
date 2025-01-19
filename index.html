@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Piece Facts</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+        }
+
+        #app {
+            position: relative;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4500;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #e2e2e2;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #ff4500;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop id="video-background">
+        <source src="https://motionbgs.com/media/1412/luffys-mighty-gear-5.960x540.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="app">
+        <h1>One Piece Facts</h1>
+        <ul id="facts-list"></ul>
+        <button id="replace-facts">Replace Facts</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const facts = [
+                "Monkey D. Luffy is the captain of the Straw Hat Pirates.",
+                "Roronoa Zoro is known for his three-sword fighting style.",
+                "Nami is the navigator of the Straw Hat Pirates.",
+                "Usopp is the sniper of the Straw Hat Pirates.",
+                "Sanji is the cook of the Straw Hat Pirates.",
+                "Tony Tony Chopper is the doctor of the Straw Hat Pirates.",
+                "Nico Robin is the archaeologist of the Straw Hat Pirates.",
+                "Franky is the shipwright of the Straw Hat Pirates.",
+                "Brook is the musician of the Straw Hat Pirates.",
+                "Jinbe is the helmsman of the Straw Hat Pirates."
+            ];
+
+            const factsList = document.getElementById('facts-list');
+            const replaceButton = document.getElementById('replace-facts');
+            let currentUtterance = null;
+
+            function displayFacts() {
+                factsList.innerHTML = '';
+                facts.forEach(fact => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = fact;
+                    listItem.addEventListener('click', () => {
+                        if (speechSynthesis.speaking) {
+                            speechSynthesis.cancel();
+                        }
+                        currentUtterance = new SpeechSynthesisUtterance(fact);
+                        const voices = speechSynthesis.getVoices();
+                        // Attempt to find an English voice
+                        const englishVoice = voices.find(voice => voice.lang.includes('en')) || voices[0];
+                        currentUtterance.voice = englishVoice;
+                        speechSynthesis.speak(currentUtterance);
+                    });
+                    listItem.addEventListener('dblclick', () => {
+                        const randomFact = facts[Math.floor(Math.random() * facts.length)];
+                        listItem.textContent = randomFact;
+                    });
+                    factsList.appendChild(listItem);
+                });
+            }
+
+            replaceButton.addEventListener('click', displayFacts);
+
+            // Load voices asynchronously
+            speechSynthesis.onvoiceschanged = displayFacts;
+
+            displayFacts();
+        });
+    </script>
+</body>
+</html>
