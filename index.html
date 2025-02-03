@@ -5,76 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One Piece Facts</title>
     <style>
+        /* Reset margin and padding for body and html, set height to 100% */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            overflow: auto; /* Allow scrolling */
         }
 
+        /* Style for the video background to cover the entire screen */
         #video-background {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure the video covers the entire area */
+            z-index: -1; /* Ensure the video is behind other content */
         }
 
+        /* Style for the main app container */
         #app {
             position: relative;
             max-width: 600px;
             margin: 50px auto;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
             border-radius: 8px;
-            z-index: 1;
+            z-index: 1; /* Ensure content is above the video */
         }
 
+        /* Style for the main heading */
         h1 {
             text-align: center;
-            color: #ff4500;
+            color: #ff4500; /* Orange color for the heading */
         }
 
+        /* Style for the unordered list */
         ul {
-            list-style-type: none;
+            list-style-type: none; /* Remove default list styling */
             padding: 0;
         }
 
+        /* Style for each list item */
         li {
             background-color: #e2e2e2;
             margin: 10px 0;
             padding: 10px;
             border-radius: 4px;
-            cursor: pointer;
+            cursor: pointer; /* Indicate that the item is clickable */
         }
 
+        /* Style for the button */
         button {
             display: block;
             margin: 20px auto;
             padding: 10px 20px;
-            background-color: #ff4500;
-            color: #fff;
+            background-color: #ff4500; /* Orange background */
+            color: #fff; /* White text */
             border: none;
             border-radius: 4px;
-            cursor: pointer;
+            cursor: pointer; /* Indicate that the button is clickable */
         }
     </style>
 </head>
 <body>
+    <!-- Video element for background -->
     <video autoplay muted loop id="video-background">
         <source src="https://motionbgs.com/media/1412/luffys-mighty-gear-5.960x540.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
+    <!-- Main app container -->
     <div id="app">
         <h1>One Piece Facts</h1>
-        <ul id="facts-list"></ul>
-        <button id="replace-facts">Replace Facts</button>
+        <ul id="facts-list"></ul> <!-- List to display facts -->
+        <button id="replace-facts">Replace Facts</button> <!-- Button to replace facts -->
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Array of facts about One Piece
             const facts = [
                 "Monkey D. Luffy is the captain of the Straw Hat Pirates.",
                 "Roronoa Zoro is known for his three-sword fighting style.",
@@ -92,35 +103,41 @@
             const replaceButton = document.getElementById('replace-facts');
             let currentUtterance = null;
 
+            // Function to display facts in the list
             function displayFacts() {
-                factsList.innerHTML = '';
+                factsList.innerHTML = ''; // Clear existing facts
                 facts.forEach(fact => {
                     const listItem = document.createElement('li');
                     listItem.textContent = fact;
                     listItem.addEventListener('click', () => {
+                        // Cancel any ongoing speech
                         if (speechSynthesis.speaking) {
                             speechSynthesis.cancel();
                         }
+                        // Create a new utterance for the clicked fact
                         currentUtterance = new SpeechSynthesisUtterance(fact);
                         const voices = speechSynthesis.getVoices();
                         // Attempt to find an English voice
                         const englishVoice = voices.find(voice => voice.lang.includes('en')) || voices[0];
                         currentUtterance.voice = englishVoice;
-                        speechSynthesis.speak(currentUtterance);
+                        speechSynthesis.speak(currentUtterance); // Speak the fact
                     });
                     listItem.addEventListener('dblclick', () => {
+                        // Replace the fact with a random one on double-click
                         const randomFact = facts[Math.floor(Math.random() * facts.length)];
                         listItem.textContent = randomFact;
                     });
-                    factsList.appendChild(listItem);
+                    factsList.appendChild(listItem); // Add the list item to the list
                 });
             }
 
+            // Event listener for the replace facts button
             replaceButton.addEventListener('click', displayFacts);
 
             // Load voices asynchronously
             speechSynthesis.onvoiceschanged = displayFacts;
 
+            // Initial display of facts
             displayFacts();
         });
     </script>
